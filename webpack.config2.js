@@ -5,7 +5,7 @@ const webpack = require('webpack')
 
 module.exports = {
   entry: {
-    main:['./src/key1/index.js','webpack-hot-middleware/client?path=/key1/_whaaat']
+    main:['./src/key2/index.js','webpack-hot-middleware/client?path=/key2/_whaaat']
     // index:['./index.html','webpack-hot-middleware/client']
   },
   devtool: 'inline-source-map',
@@ -15,7 +15,7 @@ module.exports = {
   },
 
   plugins: [
-    new CleanWebpackPlugin(['dist/key1']),
+    new CleanWebpackPlugin(['dist/key2']),
     new HtmlWebpackPlugin({
       // title: 'Bo webpack',
       template: 'index.html',
@@ -30,8 +30,8 @@ module.exports = {
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist','key1'),
-    publicPath: 'http://localhost:3000/key1',
+    path: path.resolve(__dirname, 'dist','key2'),
+    publicPath: 'http://localhost:3000/key2',
     // hotUpdateChunkFilename: 'hot-update.js',
     // hotUpdateMainFilename: 'hot-update.json',
   }
