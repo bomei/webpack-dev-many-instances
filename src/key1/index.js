@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import printMe from './printMe.js';
 
+// __webpack_public_path__='http://localhost:3000/key1/'
+
 let app=document.getElementById('app')
 let mark = document.getElementById('mark')
 mark.innerHTML='1111111111'

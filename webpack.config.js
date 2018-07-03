@@ -4,6 +4,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack')
 
 let config1 = {
+  name: 'key1',
   mode: 'development',
   entry: {
     main:['./src/key1/index.js','webpack-hot-middleware/client?path=/_whaaat']
@@ -21,6 +22,9 @@ let config1 = {
       // title: 'Bo webpack',
       template: 'index.html',
       inject: true,
+      stats:{
+        children: false
+      }
     }),
     
     // OccurenceOrderPlugin is needed for webpack 1.x only
@@ -31,14 +35,15 @@ let config1 = {
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist','key1'),
-    publicPath: 'http://localhost:3000/key1/',
-    // hotUpdateChunkFilename: 'hot-update.js',
-    // hotUpdateMainFilename: 'hot-update.json',
+    path: path.resolve(__dirname, 'dist/key1'),
+    publicPath: '/key1/',
+    // hotUpdateChunkFilename: '[hash].hot-update.js',
+    // hotUpdateMainFilename: '[hash].hot-update.json',
   }
 };
 
 let config2= {
+  name: 'key2',
   mode: 'development',
   entry: {
     main:['./src/key2/index.js','webpack-hot-middleware/client?path=/_whaaat']
@@ -56,6 +61,9 @@ let config2= {
       // title: 'Bo webpack',
       template: 'index.html',
       inject: true,
+      stats:{
+        children: false
+      }
     }),
     
     // OccurenceOrderPlugin is needed for webpack 1.x only
@@ -66,10 +74,10 @@ let config2= {
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist','key2'),
-    publicPath: 'http://localhost:3000/key2/',
-    // hotUpdateChunkFilename: 'hot-update.js',
-    // hotUpdateMainFilename: 'hot-update.json',
+    path: path.resolve(__dirname, 'dist/key2'),
+    publicPath: '/key2/',
+    // hotUpdateChunkFilename: '[hash].hot-update.js',
+    // hotUpdateMainFilename: '[hash].hot-update.json',
   }
 };
 
