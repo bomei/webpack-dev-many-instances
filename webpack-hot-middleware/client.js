@@ -14,6 +14,7 @@ var options = {
   overlayWarnings: false,
   ansiColors: {}
 };
+
 if (__resourceQuery) {
   var querystring = require('querystring');
   var overrides = querystring.parse(__resourceQuery.slice(1));
@@ -264,7 +265,9 @@ function processMessage(obj) {
           reporter.success();
         }
       }
-      if (applyUpdate && obj.action === 'build') {
+      console.log('obj\n',obj)
+      if (applyUpdate && obj.action === 'built' && window.location.pathname==='/'+obj.name) {
+      
         processUpdate(obj.hash, obj.modules, options);
       }
       break;

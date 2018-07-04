@@ -32,10 +32,18 @@ var applyOptions = {
 
 function upToDate(hash) {
   if (hash) lastHash = hash;
-  return lastHash == __webpack_hash__;
+  try{
+    var wh=__webpack_hash__;
+    return lastHash == wh;
+  }
+  catch(err){
+    console.log(err)
+    return true;
+  }
 }
 
 module.exports = function(hash, moduleMap, options) {
+  // console.warn('global-----',global.__webpack_hmr);
   var reload = options.reload;
   if (!upToDate(hash) && module.hot.status() == "idle") {
     if (options.log) console.log("[HMR] Checking for updates on the server...");
@@ -50,6 +58,7 @@ module.exports = function(hash, moduleMap, options) {
         if (options.warn) {
           console.warn("[HMR] Cannot find update (Full reload needed)");
           console.warn("[HMR] (Probably because of restarting the server)");
+          // console.warn("why i can't log in screen");
         }
         performReload();
         return null;

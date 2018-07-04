@@ -11,6 +11,7 @@ function webpackHotMiddleware(compiler, opts) {
 
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
+  var lastStats = null;
 
   if (compiler.hooks) {
     compiler.hooks.invalid.tap("webpack-hot-middleware", onInvalid);
@@ -25,12 +26,23 @@ function webpackHotMiddleware(compiler, opts) {
     eventStream.publish({action: "building"});
   }
   function onDone(statsResult) {
+    if (opts.log){
+      opts.log('lastStats-----\n',lastStats);
+      opts.log('latestStats-----\n',latestStats);
+      opts.log('statsResult-----\n',statsResult);
+    } 
+    // opts.log(lastStats.toJSON({}))
+    // opts.log(lastStats.stats === statsResult.stats)
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
+    lastStats = statsResult.toJson({});
+    // opts.log('lastStats-----\n',lastStats);
+    // if (opts.log) opts.log(statsResult);
     publishStats("built", latestStats, eventStream, opts.log);
   }
   var middleware = function(req, res, next) {
     if (!pathMatch(req.url, opts.path)) return next();
+    console.log(req)
     eventStream.handler(req, res);
     if (latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
