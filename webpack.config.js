@@ -7,7 +7,7 @@ let config1 = {
   name: 'key1',
   mode: 'development',
   entry: {
-    main:['./src/key1/index.js','./webpack-hot-middleware/client?path=/_whaaat']
+    main:['./src/key1/index.js','./webpack-hot-middleware/client?path=/ws/key1/__webpack_hmr']
     // index:['./index.html','webpack-hot-middleware/client']
   },
   devtool: 'inline-source-map',
@@ -46,7 +46,7 @@ let config2= {
   name: 'key2',
   mode: 'development',
   entry: {
-    main:['./src/key2/index.js','./webpack-hot-middleware/client?path=/_whaaat']
+    main:['./src/key2/index.js','./webpack-hot-middleware/client?path=/ws/key2/__webpack_hmr']
     // index:['./index.html','webpack-hot-middleware/client']
   },
   devtool: 'inline-source-map',

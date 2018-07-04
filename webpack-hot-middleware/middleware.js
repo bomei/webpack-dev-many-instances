@@ -1,7 +1,13 @@
 module.exports = webpackHotMiddleware;
 
-var helpers = require('./helpers');
-var pathMatch = helpers.pathMatch;
+function pathMatch(path){
+  
+  var regex = /\/ws\/(.*)\/__webpack_hmr/;
+  console.log(regex, path)
+  var res = regex.exec(path);
+  console.log(res);
+  return res===null? null: res[1];
+}
 
 function webpackHotMiddleware(compiler, opts) {
   opts = opts || {};
@@ -26,11 +32,11 @@ function webpackHotMiddleware(compiler, opts) {
     eventStream.publish({action: "building"});
   }
   function onDone(statsResult) {
-    if (opts.log){
-      opts.log('lastStats-----\n',lastStats);
-      opts.log('latestStats-----\n',latestStats);
-      opts.log('statsResult-----\n',statsResult);
-    } 
+    // if (opts.log){
+    //   opts.log('lastStats-----\n',lastStats);
+    //   opts.log('latestStats-----\n',latestStats);
+    //   opts.log('statsResult-----\n',statsResult);
+    // } 
     // opts.log(lastStats.toJSON({}))
     // opts.log(lastStats.stats === statsResult.stats)
     // Keep hold of latest stats so they can be propagated to new clients
@@ -41,8 +47,13 @@ function webpackHotMiddleware(compiler, opts) {
     publishStats("built", latestStats, eventStream, opts.log);
   }
   var middleware = function(req, res, next) {
-    if (!pathMatch(req.url, opts.path)) return next();
-    console.log(req)
+    console.log(req.path, req.url)
+    var url = req.url;
+    var appName = pathMatch(url);
+    console.log(appName)
+    if (appName === null) return next();
+    else req.appName = appName;
+    // if (req.path != '/_whaaat') console.log(req);
     eventStream.handler(req, res);
     if (latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
@@ -77,10 +88,11 @@ function createEventStream(heartbeat) {
         'Connection': 'keep-alive',
         // While behind nginx, event stream should not be buffered:
         // http://nginx.org/docs/http/ngx_http_proxy_module.html#proxy_buffering
-        'X-Accel-Buffering': 'no'
+        'X-Accel-Buffering': 'no',
+        'App-Name': req.appName
       });
       res.write('\n');
-      var id = clientId++;
+      var id = req.appName;
       clients[id] = res;
       req.on("close", function(){
         delete clients[id];
