@@ -1,4 +1,4 @@
 export default function printMe(){
   console.log('print.js')
-  return '5'
+  return 'what i am fa is fwefw write a readme.md'
 }

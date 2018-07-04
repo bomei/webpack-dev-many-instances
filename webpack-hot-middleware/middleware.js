@@ -3,9 +3,9 @@ module.exports = webpackHotMiddleware;
 function pathMatch(path){
   
   var regex = /\/ws\/(.*)\/__webpack_hmr/;
-  console.log(regex, path)
+  // console.log(regex, path)
   var res = regex.exec(path);
-  console.log(res);
+  // console.log(res);
   return res===null? null: res[1];
 }
 
@@ -18,6 +18,7 @@ function webpackHotMiddleware(compiler, opts) {
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
   var lastStats = null;
+  var lastBundles = null;
 
   if (compiler.hooks) {
     compiler.hooks.invalid.tap("webpack-hot-middleware", onInvalid);
@@ -41,16 +42,30 @@ function webpackHotMiddleware(compiler, opts) {
     // opts.log(lastStats.stats === statsResult.stats)
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
-    lastStats = statsResult.toJson({});
-    // opts.log('lastStats-----\n',lastStats);
+    var thisBundles = extractBundles(statsResult.toJson());
+    var updatedBundles = filterModifiedBundles(lastBundles,thisBundles)
+    lastBundles = thisBundles;
+    opts.log('lastStats-----\n',lastStats);
     // if (opts.log) opts.log(statsResult);
-    publishStats("built", latestStats, eventStream, opts.log);
+    publishStats("built", updatedBundles, eventStream, opts.log);
   }
+
+  function filterModifiedBundles(lastBundles, thisBundles){
+    if (lastBundles === null) return thisBundles;
+    var updatedBundles=Object();
+    Object.keys(thisBundles).forEach(function(name){
+      if (lastBundles[name]===undefined || lastBundles[name].hash!=thisBundles[name].hash){
+        updatedBundles[name]=thisBundles[name]
+      }
+    })
+    return updatedBundles;
+  }
+
   var middleware = function(req, res, next) {
-    console.log(req.path, req.url)
+    // console.log(req.path, req.url)
     var url = req.url;
     var appName = pathMatch(url);
-    console.log(appName)
+    // console.log(appName)
     if (appName === null) return next();
     else req.appName = appName;
     // if (req.path != '/_whaaat') console.log(req);
@@ -58,7 +73,8 @@ function webpackHotMiddleware(compiler, opts) {
     if (latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
-      publishStats("sync", latestStats, eventStream);
+      
+      publishStats("sync", extractBundles(latestStats.toJson()), eventStream);
     }
   };
   middleware.publish = eventStream.publish;
@@ -67,7 +83,7 @@ function webpackHotMiddleware(compiler, opts) {
 
 function createEventStream(heartbeat) {
   var clientId = 0;
-  var clients = {};
+  var clients = Object();
   function everyClient(fn) {
     Object.keys(clients).forEach(function(id) {
       fn(clients[id]);
@@ -80,6 +96,7 @@ function createEventStream(heartbeat) {
   }, heartbeat).unref();
   return {
     handler: function(req, res) {
+      // console.log(req.appName);
       req.socket.setKeepAlive(true);
       res.writeHead(200, {
         'Access-Control-Allow-Origin': '*',
@@ -94,22 +111,29 @@ function createEventStream(heartbeat) {
       res.write('\n');
       var id = req.appName;
       clients[id] = res;
+      // console.log(clients);
       req.on("close", function(){
         delete clients[id];
       });
     },
     publish: function(payload) {
-      everyClient(function(client) {
+      // everyClient(function(client) {
+      //   client.write("data: " + JSON.stringify(payload) + "\n\n");
+      // });
+      var client = clients[payload.name];
+      if (client)
         client.write("data: " + JSON.stringify(payload) + "\n\n");
-      });
     }
   };
 }
 
-function publishStats(action, statsResult, eventStream, log) {
+function publishStats(action, updatedBundles, eventStream, log) {
   // For multi-compiler, stats will be an object with a 'children' array of stats
-  var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
-  bundles.forEach(function(stats) {
+  // var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
+  // console.log(updatedBundles)
+  Object.keys(updatedBundles).forEach(function(name) {
+    var stats = updatedBundles[name]
+    // console.log(stats)
     if (log) {
       log("webpack built " + (stats.name ? stats.name + " " : "") +
         stats.hash + " in " + stats.time + "ms");
@@ -127,14 +151,24 @@ function publishStats(action, statsResult, eventStream, log) {
 }
 
 function extractBundles(stats) {
+  var res=Object()
   // Stats has modules, single bundle
-  if (stats.modules) return [stats];
+  if (stats.modules) {
+    res[stats.name]=stats;
+    return res;
+  }
 
   // Stats has children, multiple bundles
-  if (stats.children && stats.children.length) return stats.children;
+  if (stats.children && stats.children.length){
+    stats.children.forEach(function(child){
+      res[child.name]=child;
+    })
+    return res;
+  } 
 
   // Not sure, assume single
-  return [stats];
+  res['__unsure']=stats;
+  return res;
 }
 
 function buildModuleMap(modules) {
