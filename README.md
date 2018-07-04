@@ -45,7 +45,7 @@ Shortly, under the case using multiple configs:
 
 ## What need improve?
 
-* When modifying `key1` files, all configs(or call bundles) will be rebuilt, I think this can be a issue with `webpack`.
+* While just modifying files of one application, all other configs(or call bundles) will be rebuilt, I think this can be an issue with `webpack`. I have no idea about how this behaviour will impact the performance, but we don't want this anyway.
 
 
 
