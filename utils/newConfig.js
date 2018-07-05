@@ -1,7 +1,8 @@
 const fs = require('fs');
 const xtpl = require('xtpl');
 
-var appName = process.argv[2];
+var appName = process.argv[2]?process.argv[2]:'default';
+
 
 console.log('Generate new config file for '+appName);
 
