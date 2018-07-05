@@ -9,7 +9,8 @@
     "start": "webpack-dev-server --open",
     "dev": "node server.js",
     "dev-dev": "node -inspect server.js",
-    "build": "webpack"
+    "build": "webpack",
+    "new-conf": "node ./utils/newConfig.js"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,8 @@
     "xml-loader": "^1.2.1"
   },
   "dependencies": {
-    "webpack-hot-middleware": "^2.22.2"
+    "webpack-hot-middleware": "^2.22.2",
+    "xtemplate": "^4.6.1",
+    "xtpl": "^3.4.0"
   }
 }
