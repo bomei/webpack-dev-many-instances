@@ -1,12 +1,25 @@
 const fs = require('fs');
 const xtpl = require('xtpl');
 
-var appName = `\'${process.argv[2]}\'`
-console.log(appName)
+var appName = process.argv[2];
+
+console.log('Generate new config file for '+appName);
+
 xtpl.renderFile('./utils/newConfig.xtpl',{
-    appName: appName
+    appName: `\'${appName}\'`
 },function(err, content){
-    fs.writeFile(`./configs/webpack.config.${appName}.js`,content,function(err,res){
-        console.log(err, res)
+    target = `./configs/webpack.config.${appName}.js`
+    fs.exists(target,function(exists){
+        if(exists){
+            console.log(`Config for ${appName} has existed, please try another appname.`)
+            return
+        }
+        fs.writeFile(target, content,function(err){
+            if(err){
+                console.log('error:', err)
+            }
+            console.log(`webpack.config.${appName}.js generated in ./configs`)
+        })
     })
+    
 })
