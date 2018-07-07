@@ -266,7 +266,7 @@ function processMessage(obj) {
         }
       }
       console.log('obj\n',obj)
-      if (applyUpdate && obj.action === 'built' && window.location.pathname.replace(/\//g,'')==='/'+obj.name) {
+      if (applyUpdate && obj.action === 'built' && window.location.pathname.replace(/\//g,'')===obj.name) {
       
         processUpdate(obj.hash, obj.modules, options);
       }
