@@ -3,7 +3,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack');
 
-var __app_name = 'whaa'
+var __app_name = 'key4'
 
 module.exports = {
     name: __app_name,

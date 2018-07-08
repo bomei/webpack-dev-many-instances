@@ -29,15 +29,24 @@ Modify the `./src/key1/printMe.js` and see the change in `http://localhost:5000/
 
 Or if you want to dev this `web-hot-middleware`, you should use `npm run dev-dev` instead of `npm run dev`, then follow the instruction [Debugging Node.js with Google Chrome](https://medium.com/the-node-js-collection/debugging-node-js-with-google-chrome-4965b5f910f4).
 
-## Generate new config from template
+## Generate new App from templates
 
 ```bash
-npm run new-conf -- {appName}
+npm run new -- --name {name}
 ```
 
-The code above will generate a new config file named `webpack.config.{appName}.js` in the `./configs/` folder. I use the [`xtpl`](https://github.com/xtemplate/xtpl) package to render the template file, check [`utils/newConfig.js`](./utils/newConfig.js) for detail.
+The code above will generate a new config file named `webpack.config.{name}.js` in the `./configs/` folder. I use the [`xtpl`](https://github.com/xtemplate/xtpl) package to render the template file, check [`utils/newApp.js`](./utils/newApp.js) for detail.
 
 You can modify the conf under `./configs/`, and server will load all the config there.
+
+
+## Delete app
+
+```bash
+npm run delete -- --name {name}
+```
+
+This code will remove `./configs/webpack.config.{name}.js` and the `./src/{name}` folder.
 
 
 ## What's been modified?
