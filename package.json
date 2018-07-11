@@ -11,7 +11,7 @@
     "dev-dev": "node -inspect server.js",
     "build": "webpack",
     "new": "node ./utils/newApp.js",
-    "delete":"node ./utils/deleteApp.js"
+    "delete": "node ./utils/deleteApp.js"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "async-shelljs": "^0.1.2",
+    "eslint": "^5.1.0",
     "shelljs": "^0.8.2",
     "webpack-hot-middleware": "^2.22.2",
     "xtemplate": "^4.6.1",

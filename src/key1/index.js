@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import printMe from './printMe.js';
+import _ from 'lodash'
+import printMe from './printMe.js'
 
 // __webpack_public_path__='http://localhost:3000/key1/'
 
@@ -23,9 +23,9 @@ function updateApp() {
 
 // document.body.appendChild(component());
 
- if (module.hot) {
-   module.hot.accept('./printMe.js', function() {
-     console.log('Accepting the updated printMe module!');
-     updateApp();
-   })
- }
+if (module.hot) {
+  module.hot.accept('./printMe.js', function() {
+    console.log('Accepting the updated printMe module!')
+    updateApp()
+  })
+}
