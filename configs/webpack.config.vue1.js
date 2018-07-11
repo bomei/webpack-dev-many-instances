@@ -4,10 +4,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const utils = require('../utils/utils')
 const vueLoaderConfig = require('./vue-loader.conf')
+const merge = require('webpack-merge')
 
 var __app_name = 'vue1'
 
-module.exports = {
+function resolve (dir) {
+    return path.join(__dirname, '..', dir)
+}
+
+
+let config = {
     name: __app_name,
     mode: 'development',
     entry: {
@@ -66,7 +72,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+                include: [resolve('src'), resolve('test'), resolve('../webpack-hot-middleware/client')]
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -110,7 +116,17 @@ module.exports = {
         extensions: ['.js', '.vue', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
-            '@': resolve('src'),
+            '@': resolve(`src/${__app_name}`),
         }
     },
 }
+
+config = merge(config,{
+    module:{
+        rules: utils.styleLoaders({sourceMap: true, usePostCSS: true})
+    }
+})
+
+// console.log(config)
+
+module.exports=config
