@@ -1,7 +1,7 @@
 'use strict'
 const { VueLoaderPlugin } = require('vue-loader')
 const path = require('path')
-
+const VueLoaderConf = require('./vue-loader.conf')
 function resolve (dir) {
     return path.join(__dirname, '..', dir)
 }
@@ -15,7 +15,16 @@ module.exports = {
         rules: [
             {
                 test: /\.vue$/,
-                use: 'vue-loader'
+                loader: 'vue-loader',
+                options:  VueLoaderConf
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+                loader: 'url-loader',
+            },
+            {
+                test:/\.css$/,
+                use:'css-loader',
             }
         ]
     },

@@ -5,6 +5,8 @@ const webpack = require('webpack')
 const utils = require('../utils/utils')
 const VueLoader = require('vue-loader')
 const merge = require('webpack-merge')
+const VueLoaderConf = require('./vue-loader.conf')
+
 
 var __app_name = 'vue1'
 
@@ -12,25 +14,11 @@ function resolve (dir) {
     return path.join(__dirname, '..', dir)
 }
 
-const cssLoaders = [{
-    loader: 'css-loader',
-    options: {
-        modules: true,
-        importLoaders: 2,
-        localIdentName: '[name]__[local]___[hash:base64:5]'
-    }
-}, {
-    loader: 'postcss-loader',
-}, {
-    loader: 'sass-loader'
-}]
-
-
 let config = {
     name: __app_name,
     mode: 'development',
     entry: {
-        main:[`./src/${__app_name}/index.js`,`./webpack-hot-middleware/client?path=/ws/${__app_name}/__webpack_hmr`]
+        main:[`./src/${__app_name}/app.js`,`./webpack-hot-middleware/client?path=/ws/${__app_name}/__webpack_hmr`]
     // index:['./index.html','webpack-hot-middleware/client']
     },
     devtool: 'inline-source-map',
@@ -81,56 +69,15 @@ let config = {
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                options: {
-                    loaders:{
-                        js: 'babel-loader'
-                    }
-                }
-            },
-            {
-                test: /\.(css)$/i,
-                use:  [{ loader: 'style-loader' }, ...cssLoaders]
-            },
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /(node_modules)/,
-                options:{
-                    presets: [
-                        ['es2015', {modules: false, loose: true}],
-                        ['react'],
-                        ['stage-2']
-                    ],
-                    plugins: [
-                        ['transform-runtime']
-                    ],
-                    comments: false,
-                    cacheDirectory: true
-                }
+                options:  VueLoaderConf
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
                 loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: utils.assetsPath('img/[name].[hash:7].[ext]')
-                }
             },
             {
-                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: utils.assetsPath('media/[name].[hash:7].[ext]')
-                }
-            },
-            {
-                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
-                }
+                test:/\.css$/,
+                use:'css-loader',
             }
         ]
     },

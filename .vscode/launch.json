@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "启动程序",
-      "program": "${workspaceFolder}\\webpack.config.js"
+      "program": "${workspaceFolder}/configs/vue-loader.conf.js"
     }
   ]
 }
