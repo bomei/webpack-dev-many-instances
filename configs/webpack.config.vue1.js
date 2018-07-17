@@ -3,7 +3,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const utils = require('../utils/utils')
-const vueLoaderConfig = require('./vue-loader.conf')
+const VueLoader = require('vue-loader')
 const merge = require('webpack-merge')
 
 var __app_name = 'vue1'
@@ -11,6 +11,19 @@ var __app_name = 'vue1'
 function resolve (dir) {
     return path.join(__dirname, '..', dir)
 }
+
+const cssLoaders = [{
+    loader: 'css-loader',
+    options: {
+        modules: true,
+        importLoaders: 2,
+        localIdentName: '[name]__[local]___[hash:base64:5]'
+    }
+}, {
+    loader: 'postcss-loader',
+}, {
+    loader: 'sass-loader'
+}]
 
 
 let config = {
@@ -47,6 +60,7 @@ let config = {
         new webpack.HotModuleReplacementPlugin(),
         // Use NoErrorsPlugin for webpack 1.x
         new webpack.NoEmitOnErrorsPlugin(),
+        new VueLoader.VueLoaderPlugin(),
     // new CopyWebpackPlugin([
     //   {
     //     from: path.resolve(__dirname, '../src'),
@@ -67,12 +81,32 @@ let config = {
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                options: vueLoaderConfig
+                options: {
+                    loaders:{
+                        js: 'babel-loader'
+                    }
+                }
+            },
+            {
+                test: /\.(css)$/i,
+                use:  [{ loader: 'style-loader' }, ...cssLoaders]
             },
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                include: [resolve('src'), resolve('test'), resolve('../webpack-hot-middleware/client')]
+                exclude: /(node_modules)/,
+                options:{
+                    presets: [
+                        ['es2015', {modules: false, loose: true}],
+                        ['react'],
+                        ['stage-2']
+                    ],
+                    plugins: [
+                        ['transform-runtime']
+                    ],
+                    comments: false,
+                    cacheDirectory: true
+                }
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
