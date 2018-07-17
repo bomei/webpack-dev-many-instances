@@ -6,8 +6,12 @@ const utils = require('../utils/utils')
 const VueLoader = require('vue-loader')
 const merge = require('webpack-merge')
 const VueLoaderConf = require('./vue-loader.conf')
+<<<<<<< HEAD
 
+=======
+>>>>>>> log vueconf
 
+console.log(VueLoaderConf)
 var __app_name = 'vue1'
 
 function resolve (dir) {
