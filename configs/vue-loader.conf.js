@@ -8,7 +8,8 @@ loaders = utils.cssLoaders({
 console.log(loaders)
 loaders= {
     css: ['vue-style-loader',{loader: 'css-loader', options:{sourceMap: true}}],
-    postcss: ['vue-style-loader',{loader: 'css-loader', options:{sourceMap: true}}]
+    postcss: ['vue-style-loader',{loader: 'css-loader', options:{sourceMap: true}}],
+    styl: ['vue-style-loader',{loader:'css-loader',options:{sourceMap:true}}, {loader:'stylus-loader',options:{sourceMap:true}}]
 }
 module.exports = {
     loaders: loaders,

@@ -42,10 +42,13 @@
   },
   "dependencies": {
     "async-shelljs": "^0.1.2",
+    "autoprefixer": "^9.0.0",
     "eslint": "^5.1.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "node-sass": "^4.9.2",
+    "postcss-import": "^11.1.0",
     "postcss-loader": "^2.1.6",
+    "postcss-url": "^7.3.2",
     "sass-loader": "^7.0.3",
     "shelljs": "^0.8.2",
     "url-loader": "^1.0.1",

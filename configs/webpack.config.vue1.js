@@ -80,7 +80,20 @@ let config = {
             },
             {
                 test:/\.css$/,
-                use:'css-loader',
+                use:[
+                    'vue-style-loader',
+                    {loader: 'css-loader', options:{sourceMap: true}},
+                    {loader:'postcss-loader',options:{sourceMap:true}}
+                ],
+                exclude:/node_modules/
+            },
+            {
+                test:/\.postcss$/,
+                use:[
+                    'vue-style-loader',
+                    {loader: 'css-loader', options:{sourceMap: true}},
+                    {loader:'postcss-loader',options:{sourceMap:true}}
+                ],
                 exclude:/node_modules/
             },
             {
