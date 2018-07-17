@@ -1,15 +1,14 @@
 'use strict'
-// const utils = require('../utils/utils')
-// const isProduction = false
-// const sourceMapEnabled = true
+const utils = require('../utils/utils')
 let loaders
-// let loaders = utils.cssLoaders({
-//     sourceMap: true,
-//     extract: false
-// })
-// console.log(loaders)
+loaders = utils.cssLoaders({
+    sourceMap: true,
+    extract: false
+})
+console.log(loaders)
 loaders= {
-    css: ['vue-style-loader',{loader: 'css-loader', options:{sourceMap: true}}]
+    css: ['vue-style-loader',{loader: 'css-loader', options:{sourceMap: true}}],
+    postcss: ['vue-style-loader',{loader: 'css-loader', options:{sourceMap: true}}]
 }
 module.exports = {
     loaders: loaders,

@@ -6,10 +6,6 @@ const utils = require('../utils/utils')
 const VueLoader = require('vue-loader')
 const merge = require('webpack-merge')
 const VueLoaderConf = require('./vue-loader.conf')
-<<<<<<< HEAD
-
-=======
->>>>>>> log vueconf
 
 console.log(VueLoaderConf)
 var __app_name = 'vue1'
@@ -22,7 +18,7 @@ let config = {
     name: __app_name,
     mode: 'development',
     entry: {
-        main:[`./src/${__app_name}/app.js`,`./webpack-hot-middleware/client?path=/ws/${__app_name}/__webpack_hmr`]
+        main:[`./src/${__app_name}/index.js`,`./webpack-hot-middleware/client?path=/ws/${__app_name}/__webpack_hmr`]
     // index:['./index.html','webpack-hot-middleware/client']
     },
     devtool: 'inline-source-map',
@@ -34,12 +30,13 @@ let config = {
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: '"development'
+                NODE_ENV: '"development"'
             }
         }),
         new CleanWebpackPlugin([`./dist/${__app_name}`]),
         new HtmlWebpackPlugin({
             // title: 'Bo webpack',
+            filename: 'index.html',
             template: 'index.html',
             inject: true,
             stats:{
@@ -62,7 +59,7 @@ let config = {
     // ])
     ],
     output: {
-        filename: '[name].bundle.js',
+        filename: `${__app_name}.bundle.js`,
         path: path.resolve(__dirname, `../../dist/${__app_name}`),
         publicPath: `/${__app_name}/`,
     // hotUpdateChunkFilename: '[hash].hot-update.js',
@@ -73,15 +70,23 @@ let config = {
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                options:  VueLoaderConf
+                options:  VueLoaderConf,
+                exclude:/node_modules/
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
                 loader: 'url-loader',
+                exclude:/node_modules/
             },
             {
                 test:/\.css$/,
                 use:'css-loader',
+                exclude:/node_modules/
+            },
+            {
+                test:/\.js$/,
+                loader: 'babel-loader',
+                exclude:/node_modules/
             }
         ]
     },
@@ -106,11 +111,11 @@ let config = {
     },
 }
 
-config = merge(config,{
-    module:{
-        rules: utils.styleLoaders({sourceMap: true, usePostCSS: true})
-    }
-})
+// config = merge(config,{
+//     module:{
+//         rules: utils.styleLoaders({sourceMap: true, usePostCSS: true})
+//     }
+// })
 
 // console.log(config)
 
