@@ -37,7 +37,7 @@ let config = {
         new HtmlWebpackPlugin({
             // title: 'Bo webpack',
             filename: 'index.html',
-            template: 'index.html',
+            template: 'test.pug',
             inject: true,
             stats:{
                 children: false
@@ -99,6 +99,16 @@ let config = {
             {
                 test:/\.js$/,
                 loader: 'babel-loader',
+                exclude:/node_modules/
+            },
+            {
+                test:/\.pug$/,
+                loader: 'pug-loader',
+                exclude:/node_modules/
+            },
+            {
+                test:/\.yaml$/,
+                loader: 'yaml-loader',
                 exclude:/node_modules/
             }
         ]
