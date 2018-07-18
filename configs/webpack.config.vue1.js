@@ -2,12 +2,10 @@ const path=require('path')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
-const utils = require('../utils/utils')
 const VueLoader = require('vue-loader')
-const merge = require('webpack-merge')
 const VueLoaderConf = require('./vue-loader.conf')
 
-console.log(VueLoaderConf)
+// console.log(VueLoaderConf)
 var __app_name = 'vue1'
 
 function resolve (dir) {
@@ -33,7 +31,7 @@ let config = {
                 NODE_ENV: '"development"'
             }
         }),
-        new CleanWebpackPlugin([`./dist/${__app_name}`]),
+        new CleanWebpackPlugin([path.join(__dirname,`../dist/${__app_name}`)]),
         new HtmlWebpackPlugin({
             // title: 'Bo webpack',
             filename: 'index.html',

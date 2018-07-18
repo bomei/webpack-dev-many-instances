@@ -5,7 +5,7 @@ const webpack = require('webpack');
 const VueLoader = require('vue-loader')
 const VueLoaderConf = require('./vue-loader.conf')
 
-var __app_name = {{{appName}}}
+var __app_name = 'vue2'
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -30,7 +30,7 @@ module.exports = {
           NODE_ENV: '"development"'
         }
       }),
-      new CleanWebpackPlugin([path.resolve(__dirname,`../../dist/${__app_name}`)]),
+      new CleanWebpackPlugin([path.join(__dirname,`../dist/${__app_name}`)]),
       new HtmlWebpackPlugin({
         // title: 'Bo webpack',
         template: 'index.html',
