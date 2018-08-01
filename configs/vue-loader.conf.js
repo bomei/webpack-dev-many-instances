@@ -5,7 +5,7 @@ loaders = utils.cssLoaders({
     sourceMap: true,
     extract: false
 })
-console.log(loaders)
+// console.log(loaders)
 loaders= {
     css: ['vue-style-loader',{loader: 'css-loader', options:{sourceMap: true}}],
     postcss: ['vue-style-loader',{loader: 'css-loader', options:{sourceMap: true}}],

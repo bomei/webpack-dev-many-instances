@@ -5,10 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name":"Server.js",
       "type": "node",
       "request": "launch",
-      "name": "启动程序",
-      "program": "${workspaceFolder}/configs/vue-loader.conf.js"
+      "program": "${workspaceFolder}/server.js"
+    },
+    {
+      "name":"Dev-middleware",
+      "type":"node",
+      "request": "launch",
+      "program": "${workspaceFolder}/test/test-dev-middleware.js"
     }
   ]
 }

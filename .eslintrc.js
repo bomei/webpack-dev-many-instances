@@ -28,6 +28,7 @@ module.exports = {
             "never"
         ],
         "no-console":"off",
+        "no-cond-assign":"off",
         "linebreak-style":"off",
     }
 };
