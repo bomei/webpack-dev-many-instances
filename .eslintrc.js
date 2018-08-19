@@ -30,5 +30,7 @@ module.exports = {
         "no-console":"off",
         "no-cond-assign":"off",
         "linebreak-style":"off",
+        "semi":"off",
+        "no-unused-vars":"off"
     }
 };

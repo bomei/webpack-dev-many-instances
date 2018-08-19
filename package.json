@@ -12,7 +12,8 @@
     "build": "webpack --config configs/webpack.config.dev.js",
     "new": "node ./utils/newApp.js",
     "delete": "node ./utils/deleteApp.js",
-    "pug": "pug test.pug"
+    "pug": "pug test.pug",
+    "babel": "babel raw --out-dir dist --watch --ignore raw/templates --copy-files raw/templates"
   },
   "keywords": [],
   "author": "",
@@ -45,6 +46,7 @@
   "dependencies": {
     "async-shelljs": "^0.1.2",
     "autoprefixer": "^9.0.0",
+    "babel-cli": "^6.26.0",
     "body-parser": "^1.18.3",
     "eslint": "^5.1.0",
     "extract-text-webpack-plugin": "^3.0.2",

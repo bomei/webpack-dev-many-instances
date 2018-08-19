@@ -8,13 +8,20 @@
       "name":"Server.js",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/server.js"
+      "program": "${workspaceFolder}/dist/server.js"
     },
     {
       "name":"Dev-middleware",
       "type":"node",
       "request": "launch",
-      "program": "${workspaceFolder}/test/test-dev-middleware.js"
-    }
+      "program": "${workspaceFolder}/dist/test/test-dev-middleware.js"
+    },
+    {
+      "name": "wrapper",
+      "type":"node",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/wp-dev-middleware-dynamic-config/test/test-wrapper.js",
+    },
+    
   ]
 }

@@ -1,0 +1,139 @@
+openapi: 3.0.0
+info:
+  title: 1Token Basic Api
+  description:  1Token Basic Api
+  version: "0.1"
+servers:
+  - url: https://1token.trade/api/v1/basic
+paths:
+  /time:
+    get:
+      summary: Get Server Time
+      description: >
+        From this endpoint you can get our server's time. Our server is <a href="https://en.wikipedia.org/wiki/Network_Time_Protocol" target="_blank">ntp</a> synchronized, and located in AliCloud HongKong region.  <br>
+        Return Timestamp in seconds: <a href="https://1token.trade/api/v1/basic/time" target="_blank"> https://1token.trade/api/v1/basic/time </a>
+      responses:
+        '200':
+          description: Server's Timestamp
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerTime'
+  /contracts:
+    parameters:
+      - in: query
+        name: exchange
+        description: exchange name (huobip/okex/okef for example, or just check <a href="https://1token.trade/docs#/exchange-overview" target="_blank">exchange overview</a>)
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: name
+        description: contract name， all contracts in the exchange will be return if not provided
+        required: false
+        schema:
+          type: string
+      
+    get:
+      summary: Contract Information
+      description: >
+        From this endpoint, you can get to know which contracts is supported by the exchange specified in the url, and also the contracts' information such as <strong>name, symbol, min_exchange, min_amount, unit_amount</strong>, etc. <br>
+        If you are just care about certain one contract, you can specify the <strong>name</strong> parameter in the url to just fetch the one contract in that exchange.<br> 
+        To know more about exchanges' and contracts' symbol, check the <a href="https://1token.trade/docs#/instruction/naming-rules" target="_blank">contracts' naming ruls</a> and <a href="https://1token.trade/docs#/exchange-overview" target="_blank">exchange overview</a> <br>
+        An example is like <a href='https://1token.trade/api/v1/basic/contracts?exchange=huobip' target='_blank'> https://1token.trade/api/v1/basic/contracts?exchange=huobip</a>, where you can get everything you need to know about huobi's contracts.
+      responses:
+        '200':
+          description: info
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contracts'
+          
+  /exchanges:
+    get:
+      summary: Get exchanges
+      description: >
+        From this endpoint, you can get all exchanges supported by 1token. The return information includes the exchange <strong>name, symbol, symbolv2 </strong>and its <strong>realm</strong>.
+      responses:
+        '200':
+          description: info
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exchanges'
+          
+
+  
+components: 
+  schemas:    
+    ServerTime:
+      type: object
+      properties:
+        server_time:
+          type: number
+          description: The timestamp sync from 1token server located in AliCloud HONGKONG
+    
+    Contracts:
+      type: object
+      properties:
+        name:
+          type: string
+          description: contract name (btc.usd) (btc.usd.q), check <a href="https://1token.trade/r/docs#/instruction/naming-rules" target="_blank">naming-rules</a> for details.
+        currency:
+          type: string
+        category:
+          type: string
+          description: >
+            There are two types of contracts, "Stock" and "Future", check <a href="https://1token.trade/r/docs#/instruction/naming-rules?id=%e6%9c%9f%e8%b4%a7%e4%ba%a4%e6%98%93%e4%bb%a3%e7%a0%81" target="_blank">naming-rules-future-contract</a> for more info about future.
+        alias:
+          type: string
+        exec_price:
+          type: number
+        min_change:
+          type: number
+          description: >
+            Minimum price change percentage to publish feed
+        first_day:
+          type: number
+        min_amount:
+          type: number
+          description: >
+            The minimum amount one order must trade at least, <br>
+            For example min_amount is 1.0, then the order you can place must bigger than 1.0.
+        unit_amount:
+          type: number
+          description: >
+            The unit amount you can trade, <br>
+            For example min_amount is 1.0 and unit_amount is 0.2, then the order you can place is 1.0, 1.2, 1.4, ...
+          
+        multiplier:
+          type: number
+          description: >
+            Only available in derivatives (currently only future) <br>
+            For example (100 for okef/btc.usd.q, 10 for okef/eos.usd.q)
+
+        last_day:
+          type: number
+          description: last day of the contract (only useful in derivatives)
+        symbol:
+          type: string
+          description: >
+            ${exchange}/${name} <br> 
+            Naming rule can refer to <a href='https://1token.trade/r/docs#/instruction/naming-rules'> https://1token.trade/r/docs#/instruction/naming-rules </a>
+  
+    Exchanges:
+      type: object
+      properties:
+        realm:
+          type: string
+        name:
+          type: string
+        symbol:
+          type: string
+        symbolv2:
+          type: string
+    
