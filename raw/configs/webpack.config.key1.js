@@ -5,12 +5,12 @@ const webpack = require('webpack')
 
 var __app_name = 'key1'
 
-module.exports = {
+let config = {
     name: __app_name,
     mode: 'development',
     entry: {
-        main:[`./src/${__app_name}/index.js`,`./webpack-hot-middleware/client?path=/ws/${__app_name}/__webpack_hmr`]
-        // index:['./index.html','webpack-hot-middleware/client']
+        // main:[`./src/${__app_name}/index.js`,`./webpack-hot-middleware/client?path=/ws/${__app_name}/__webpack_hmr`]
+        index:[path.resolve(__dirname, `../src/${__app_name}/index.js`)]
     },
     devtool: 'inline-source-map',
     devServer:{
@@ -19,7 +19,7 @@ module.exports = {
     },
   
     plugins: [
-        new CleanWebpackPlugin([`./dist/${__app_name}`]),
+        new CleanWebpackPlugin([`../dist/${__app_name}`]),
         new HtmlWebpackPlugin({
         // title: 'Bo webpack',
             template: 'index.html',
@@ -43,3 +43,5 @@ module.exports = {
         // hotUpdateMainFilename: '[hash].hot-update.json',
     }
 }
+
+export {config}

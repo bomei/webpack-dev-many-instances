@@ -5,117 +5,108 @@ const urlJoin = require('url-join')
 const DevMiddlewareError = require('./DevMiddlewareError')
 const { getFilenameFromUrl, handleRangeHeaders, handleRequest, ready, noop } = require('./util')
 
+export default class Middleware{
+    constructor(configStore){
+        this.cs = configStore
+    }
 
-module.exports = function wrapper(configStore) {
-    function middleware(req, res, next) {
-    // fixes #282. credit @cexoso. in certain edge situations res.locals is
-    // undefined.
-
-        if(!(req.name in configStore.configShelt)){
-            next()
-        }
-
-        this.context = configStore[req.name].context
-
-
-        
-
+    middleware(req, res, next){
+        let name = req.name
+        if (!name) return next()
         res.locals = res.locals || {}
 
         function goNext() {
-            if (!this.context.options.serverSideRender) {
-                return next()
-            }
+            try{
+                if (!context.options.serverSideRender) {
+                    return next();
+                }
 
-            return new Promise(((resolve) => {
-                ready(this.context, () => {
-                    res.locals.webpackStats = this.context.webpackStats
-                    resolve(next())
-                }, req)
-            }))
+                return new Promise(((resolve) => {
+                    ready(context, () => {
+                        res.locals.webpackStats = context.webpackStats;
+                        resolve(next());
+                    }, req);
+                }));
+            }catch(e){
+                console.log(e)
+            }
         }
 
-        if (req.method !== 'GET') {
+        const context = this.cs[name]
+
+        if (res.method != 'GET'){
             return goNext()
         }
 
-        let filename = getFilenameFromUrl(this.context.options.publicPath, this.context.compiler, req.url)
+        let filename = getFilenameFromUrl(context.options.publicPath, context.compiler, req.url);
 
         if (filename === false) {
-            return goNext()
+            return goNext();
         }
 
         return new Promise(((resolve) => {
-            handleRequest(this.context, filename, processRequest, req)
+            handleRequest(context, filename, processRequest, req);
             function processRequest() {
                 try {
-                    let stat = this.context.fs.statSync(filename)
+                    let stat = context.fs.statSync(filename);
 
                     if (!stat.isFile()) {
                         if (stat.isDirectory()) {
-                            let { index } = this.context.options
+                            let { index } = context.options;
 
                             if (index === undefined || index === true) {
-                                index = 'index.html'
+                                index = 'index.html';
                             } else if (!index) {
-                                throw new DevMiddlewareError('next')
+                                throw new DevMiddlewareError('next');
                             }
 
-                            filename = urlJoin(filename, index)
-                            stat = this.context.fs.statSync(filename)
+                            filename = urlJoin(filename, index);
+                            stat = context.fs.statSync(filename);
                             if (!stat.isFile()) {
-                                throw new DevMiddlewareError('next')
+                                throw new DevMiddlewareError('next');
                             }
                         } else {
-                            throw new DevMiddlewareError('next')
+                            throw new DevMiddlewareError('next');
                         }
                     }
                 } catch (e) {
-                    return resolve(goNext())
+                    return resolve(goNext());
                 }
 
                 // server content
-                let content = this.context.fs.readFileSync(filename)
-                content = handleRangeHeaders(content, req, res)
+                let content = context.fs.readFileSync(filename);
+                content = handleRangeHeaders(content, req, res);
 
-                let contentType = mime.getType(filename)
+                let contentType = mime.getType(filename);
 
                 // do not add charset to WebAssembly files, otherwise compileStreaming will fail in the client
                 if (!/\.wasm$/.test(filename)) {
-                    contentType += '; charset=UTF-8'
+                    contentType += '; charset=UTF-8';
                 }
 
-                res.setHeader('Content-Type', contentType)
-                res.setHeader('Content-Length', content.length)
+                res.setHeader('Content-Type', contentType);
+                res.setHeader('Content-Length', content.length);
 
-                const { headers } = this.context.options
+                const { headers } = context.options;
                 if (headers) {
                     for (const name in headers) {
                         if ({}.hasOwnProperty.call(headers, name)) {
-                            res.setHeader(name, this.context.options.headers[name])
+                            res.setHeader(name, context.options.headers[name]);
                         }
                     }
                 }
                 // Express automatically sets the statusCode to 200, but not all servers do (Koa).
-                res.statusCode = res.statusCode || 200
-                if (res.send) res.send(content)
-                else res.end(content)
-                resolve()
+                res.statusCode = res.statusCode || 200;
+                if (res.send) res.send(content);
+                else res.end(content);
+                resolve();
             }
-        }))
+        }));
+
     }
 
-    middleware.prototype.close = function(callback){
-        callback = callback || noop
-        let context = this.ConfigStore[this.req.name].context
-        if (context.watching) {
-            context.watching.close(callback)
-        } else {
-            callback()
-        }
+    close(name){
+
     }
 
-    middleware.prototype.fileStystem = this.configStore.configShelt[this.req.name].context.fs
-
-    return middleware
 }

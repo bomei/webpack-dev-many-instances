@@ -1,4 +1,4 @@
 export default function printMe(){
     console.log('print.js')
-    return 'fwefdf'
+    return 'fuckyou'
 }

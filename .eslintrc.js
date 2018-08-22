@@ -10,7 +10,9 @@ module.exports = {
         "ecmaVersion": 2018,
         "sourceType": "module"
     },
+    "plugins":["import"],
     "rules": {
+        "import/namespace":[2],
         "indent": [
             "error",
             4

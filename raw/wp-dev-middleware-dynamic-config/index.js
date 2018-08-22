@@ -2,10 +2,11 @@
 
 const mime = require('mime')
 const createContext = require('./lib/context')
-const middleware = require('./lib/middleware')
+import Middleware from './lib/middleware'
 const reporter = require('./lib/reporter')
 const { setFs, toDisk } = require('./lib/fs')
 const { getFilenameFromUrl, noop, ready } = require('./lib/util')
+import {ConfigStore} from './lib/ConfigStore'
 
 require('loud-rejection/register')
 
@@ -25,80 +26,38 @@ const defaults = {
     writeToDisk: false
 }
 
-module.exports = function wdm(compiler, opts) {
-    const options = Object.assign({}, defaults, opts)
+export default class WebpackDevMiddleware{
+    constructor(configStore){
+        this.configStore= configStore || new ConfigStore()
+        this.wdm = new Middleware(this.configStore)
+    }
 
-    if (options.lazy) {
-        if (typeof options.filename === 'string') {
-            const filename = options.filename
-                .replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') // eslint-disable-line no-useless-escape
-                .replace(/\\\[[a-z]+\\\]/ig, '.+')
+    addConfig(config, opts){
+        return this.configStore.addConfig(config,opts)
+    }
 
-            options.filename = new RegExp(`^[/]{0,1}${filename}$`)
+    closeWatch(name, callback){
+        try{
+            this.configStore.closeWatch(name,callback)
+            return true
+        }catch(e){
+            return e
         }
     }
 
-    // defining custom MIME type
-    if (options.mimeTypes) {
-        mime.define(options.mimeTypes)
+    startWatch(name){
+        return this.configStore.startWatch(name)
     }
 
-    const context = createContext(compiler, options)
 
-    // start watching
-    if (!options.lazy) {
-        const watching = compiler.watch(options.watchOptions, (err) => {
-            if (err) {
-                context.log.error(err.stack || err)
-                if (err.details) {
-                    context.log.error(err.details)
-                }
-            }
-        })
-
-        context.watching = watching
-    } else {
-        context.state = true
-    }
-
-    if (options.writeToDisk) {
-        toDisk(context)
-    }
-
-    setFs(context, compiler)
-
-    let res = Object.assign(middleware(context), {
-        close(callback) {
-            callback = callback || noop
-
-            if (context.watching) {
-                context.watching.close(callback)
-            } else {
-                callback()
-            }
-        },
-
-        context,
-
-        fileSystem: context.fs,
-
-        getFilenameFromUrl: getFilenameFromUrl.bind(this, context.options.publicPath, context.compiler),
-
-        invalidate(callback) {
-            callback = callback || noop
-            if (context.watching) {
-                ready(context, callback, {})
-                context.watching.invalidate()
-            } else {
-                callback()
-            }
-        },
-
-        waitUntilValid(callback) {
-            callback = callback || noop
-            ready(context, callback, {})
+    deleteConfig(name, opts){
+        let result=this.closeWatch(name)
+        if(result){
+            this.configStore.removeConfig(name)
         }
-    })
-    console.log()
-    return res
+    }
+
+    middleware(req, res, next){
+        return this.wdm.middleware(req,res,next)
+    }
 }

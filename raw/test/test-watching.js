@@ -1,0 +1,5 @@
+import express from 'express'
+import {config} from '../../configs/webpack.config.key1'
+import WebpackDevMiddleware from '../index'
+import webpackHotMiddleware from 'webpack-hot-middleware'
+import bodyParser from 'body-parser'
