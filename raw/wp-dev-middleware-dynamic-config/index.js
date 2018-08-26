@@ -6,7 +6,7 @@ import Middleware from './lib/middleware'
 const reporter = require('./lib/reporter')
 const { setFs, toDisk } = require('./lib/fs')
 const { getFilenameFromUrl, noop, ready } = require('./lib/util')
-import {ConfigStore} from '../utils/ConfigStore'
+import {CompilerManager} from '../utils/compilerManager'
 
 require('loud-rejection/register')
 
@@ -27,30 +27,72 @@ const defaults = {
 }
 
 export default class WebpackDevMiddleware{
-    constructor(configStore){
-        this.configStore= configStore || new ConfigStore()
-        this.wdm = new Middleware(this.configStore)
+    constructor(compilerManeger){
+        this.compilerManeger= compilerManeger
+        this.wdm = new Middleware(this.compilerManeger, this.contextManager)
+        this.contextManager = new Map()
+        this.optionsMap = new Map()
     }
 
-    addConfig(config, opts){
-        return this.configStore.addConfig(config,opts)
-    }
-
-    closeWatch(name, callback){
-        try{
-            this.configStore.closeWatch(name,callback)
-            return true
-        }catch(e){
-            return e
+    addConfig(name, opts){
+        const options = Object.assign({},defaults,opts)
+        if (options.lazy) {
+            if (typeof options.filename === 'string') {
+                const filename = options.filename
+                    .replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') // eslint-disable-line no-useless-escape
+                    .replace(/\\\[[a-z]+\\\]/ig, '.+');
+    
+                options.filename = new RegExp(`^[/]{0,1}${filename}$`);
+            }
         }
+
+        // defining custom MIME type
+        if (options.mimeTypes) {
+            mime.define(options.mimeTypes);
+        }
+
+        this.optionsMap.set(name, options)
+
+        this.handleNewConfig(name)
+        
+        
+    }
+
+    handleNewConfig(name){
+        let {compiler} = this.compilerManeger.get(name)
+        let options = this.optionsMap.get(name)
+        const context = createContext(compiler,options)
+
+        // start watching
+        if (!options.lazy) {
+            const watching = compiler.watch(options.watchOptions, (err) => {
+                if (err) {
+                    context.log.error(err.stack || err);
+                    if (err.details) {
+                        context.log.error(err.details);
+                    }
+                }
+            });
+
+            context.watching = watching;
+        } else {
+            context.state = true;
+        }
+        if (options.writeToDisk) {
+            toDisk(context);
+        }
+    
+        setFs(context, compiler)
+        
+        this.contextManager.set(name,context)
+
     }
 
 
-    deleteConfig(name, opts){
-        let result=this.closeWatch(name)
-        if(result){
-            this.configStore.removeConfig(name)
-        }
+    deleteConfig(name){
+        let context = this.contextManager.get(name)
+        let result=context.watching.close()
+        this.compilerManeger.deleteConfig(name)
     }
 
     middleware(req, res, next){

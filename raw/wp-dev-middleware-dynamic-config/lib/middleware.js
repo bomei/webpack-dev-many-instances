@@ -6,14 +6,19 @@ const DevMiddlewareError = require('./DevMiddlewareError')
 const { getFilenameFromUrl, handleRangeHeaders, handleRequest, ready, noop } = require('./util')
 
 export default class Middleware{
-    constructor(configStore){
-        this.cs = configStore
+    constructor(compilerManager, contextManeger){
+        this.compilerManager = compilerManager
+        this.contextManeger = contextManeger
     }
 
     middleware(req, res, next){
         let name = req.name
         if (!name) return next()
         res.locals = res.locals || {}
+
+
+
+        const context = this.contextManeger.get(name)
 
         function goNext() {
             try{
@@ -31,8 +36,6 @@ export default class Middleware{
                 console.log(e)
             }
         }
-
-        const context = this.cs[name]
 
         if (res.method != 'GET'){
             return goNext()
@@ -102,10 +105,6 @@ export default class Middleware{
                 resolve();
             }
         }));
-
-    }
-
-    close(name){
 
     }
 
