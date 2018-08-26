@@ -1,5 +1,5 @@
 const wrapper = require('../lib/middleware')
-const ConfigStore = require('../lib/ConfigStore')
+const ConfigStore = require('../../utils/ConfigStore')
 const config = require('../../configs/webpack.config.vue1')
 
 let cs = Object.create(ConfigStore)
@@ -10,12 +10,12 @@ console.log(cs)
 
 
 class WB{
-  constructor(req,res,next){
-    this.req=req
-    console.log(req,res,next)
-  }
+    constructor(req,res,next){
+        this.req=req
+        console.log(req,res,next)
+    }
 
-  close(){
-    console.log(this.req)
-  }
+    close(){
+        console.log(this.req)
+    }
 }

@@ -6,7 +6,7 @@ import Middleware from './lib/middleware'
 const reporter = require('./lib/reporter')
 const { setFs, toDisk } = require('./lib/fs')
 const { getFilenameFromUrl, noop, ready } = require('./lib/util')
-import {ConfigStore} from './lib/ConfigStore'
+import {ConfigStore} from '../utils/ConfigStore'
 
 require('loud-rejection/register')
 
@@ -43,10 +43,6 @@ export default class WebpackDevMiddleware{
         }catch(e){
             return e
         }
-    }
-
-    startWatch(name){
-        return this.configStore.startWatch(name)
     }
 
 

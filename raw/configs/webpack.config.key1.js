@@ -10,7 +10,7 @@ let config = {
     mode: 'development',
     entry: {
         // main:[`./src/${__app_name}/index.js`,`./webpack-hot-middleware/client?path=/ws/${__app_name}/__webpack_hmr`]
-        index:[path.resolve(__dirname, `../src/${__app_name}/index.js`)]
+        index:[`../src/${__app_name}/index.js`]
     },
     devtool: 'inline-source-map',
     devServer:{
