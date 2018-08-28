@@ -12,17 +12,15 @@ export default class Middleware{
     }
 
     middleware(req, res, next){
-        let name = req.name
-        if (!name) return next()
+        let name = req.path.split('/')[1]
+        if (!name || !this.contextManeger.has(name)) return next()
+        req.appName = name
         res.locals = res.locals || {}
-
-
-
         const context = this.contextManeger.get(name)
 
         function goNext() {
             try{
-                if (!context.options.serverSideRender) {
+                if (!context || !context.options.serverSideRender) {
                     return next();
                 }
 
@@ -37,7 +35,7 @@ export default class Middleware{
             }
         }
 
-        if (res.method != 'GET'){
+        if (req.method != 'GET'){
             return goNext()
         }
 
@@ -45,6 +43,10 @@ export default class Middleware{
 
         if (filename === false) {
             return goNext();
+        }
+
+        if(process.platform === 'win32'){
+            filename = filename.replace(/\\/g,'/')
         }
 
         return new Promise(((resolve) => {

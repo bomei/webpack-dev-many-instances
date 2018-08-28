@@ -29,8 +29,9 @@ const defaults = {
 export default class WebpackDevMiddleware{
     constructor(compilerManeger){
         this.compilerManeger= compilerManeger
-        this.wdm = new Middleware(this.compilerManeger, this.contextManager)
         this.contextManager = new Map()
+        this.wdm = new Middleware(this.compilerManeger, this.contextManager)
+        
         this.optionsMap = new Map()
     }
 

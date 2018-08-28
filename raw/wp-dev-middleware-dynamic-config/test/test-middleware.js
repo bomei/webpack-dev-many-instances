@@ -1,21 +1,27 @@
 // import WebpackDevMiddleware from '../index'
 import express from 'express'
-import {config} from '../../configs/webpack.config.key1'
-import WebpackDevMiddleware from '../index'
-import webpackHotMiddleware from 'webpack-hot-middleware'
+import WebpackDevMiddleware from '../wp-dev-middleware-dynamic-config'
 import bodyParser from 'body-parser'
-
+import CompilerManager from '../utils/compilerManager'
 
 // console.log(config)
 const app = express()
 
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded())
+// app.use(bodyParser.urlencoded())
 
+let cm = new CompilerManager()
 
-const wdm = new WebpackDevMiddleware()
+const wdm = new WebpackDevMiddleware(cm)
 app.use(wdm.middleware.bind(wdm))
 
+function extractName(path){
+    let regex = /\/(.*)(\/).*/
+}
+
+app.use((req,res,next)=>{
+    return next()
+})
 // app.use(webpackHotMiddleware)
 function addRoutes(){
     app.get('/get',(req,res)=>{
@@ -23,7 +29,19 @@ function addRoutes(){
     })
 
     app.get('/new',(req,res)=>{
-        let result = wdm.addConfig(config)
+        let appName = req.param('app-name')
+        let config = require(`../../configs/webpack.config.${appName}.js`)
+        config = config.config || config
+        cm.addConfig(config,true)
+        let result = wdm.addConfig(config.name)
+        res.send(result)
+    })
+
+    app.get('/cover',(req,res)=>{
+        let appName = req.param('app-name')
+        let {config} = require(`../../configs/webpack.config.${appName}.js`)
+        cm.addConfig(config, false)
+        let result = wdm.addConfig(config.name)
         res.send(result)
     })
 

@@ -11,7 +11,7 @@ const HASH_REGEXP = /[0-9a-f]{10,}/
 // support for multi-compiler configuration
 // see: https://github.com/webpack/webpack-dev-server/issues/641
 function getPaths(publicPath, compiler, url) {
-    const compilers = compiler && compiler.compilers
+    const compilers = [compiler] || compiler.compilers
     if (Array.isArray(compilers)) {
         let compilerPublicPath
 
@@ -20,8 +20,8 @@ function getPaths(publicPath, compiler, url) {
 
         for (let i = 0; i < compilers.length; i++) {
             compilerPublicPath = compilers[i].options
-    && compilers[i].options.output
-    && compilers[i].options.output.publicPath
+                                && compilers[i].options.output
+                                && compilers[i].options.output.publicPath
 
             if (compilerPublicPath) {
                 if (compilerPublicPath.indexOf('/') === 0) {
@@ -47,6 +47,42 @@ function getPaths(publicPath, compiler, url) {
     }
 }
 
+function getPaths2(publicPath, compiler, url){
+    let compilerPublicPath
+
+    // the path portion of compilerPublicPath
+    let compilerPublicPathBase
+
+    if(compiler.options.devServer.contentBase){
+        compilerPublicPath = compiler.options.devServer.contentBase
+    }
+    else{
+        compilerPublicPath = compiler.options
+                            && compiler.options.output
+                            && compiler.options.output.publicPath
+    }
+
+    if (compilerPublicPath) {
+        if (compilerPublicPath.indexOf('/') === 0) {
+            compilerPublicPathBase = compilerPublicPath
+        } else {
+            // handle the case where compilerPublicPath is a URL with hostname
+            compilerPublicPathBase = parse(compilerPublicPath).pathname
+        }
+
+        // check the url vs the path part of the compilerPublicPath
+        if (url.indexOf(compilerPublicPathBase) === 0) {
+            return {
+                publicPath: compilerPublicPath,
+                outputPath: compiler.outputPath
+            }
+        }
+    }
+    return{
+        publicPath,
+        outputPath: compiler.outputPath
+    }
+}
 function ready(context, fn, req) {
     if (context.state) {
         return fn(context.webpackStats)
@@ -58,8 +94,14 @@ function ready(context, fn, req) {
 
 module.exports = {
     getFilenameFromUrl(pubPath, compiler, url) {
-        const { outputPath, publicPath } = getPaths(pubPath, compiler, url)
+        // if (url.slice(1)===compiler.name)
+        //     return compiler.outputPath
+        // url = url.split('/').slice(2).join('/')
+
+        let { outputPath, publicPath } = getPaths2(pubPath, compiler, url)
         // localPrefix is the folder our bundle should be in
+        outputPath = outputPath.replace(/\\/g,'/').split('/')
+        outputPath = outputPath.slice(0,outputPath.length-1).join('/')
         const localPrefix = parse(publicPath || '/', false, true)
         const urlObject = parse(url)
         let filename
@@ -92,7 +134,9 @@ module.exports = {
         if (process.platform === 'win32') {
             // Path Handling for Microsoft Windows
             if (filename) {
-                uri = urlJoin((outputPath || ''), querystring.unescape(filename))
+                filename = filename.replace(/\\/g,'/')
+
+                uri = urlJoin((outputPath || '').replace(/\\/g,'/'), querystring.unescape(filename))
 
                 if (!pathabs.win32(uri)) {
                     uri = `/${uri}`

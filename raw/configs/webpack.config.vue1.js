@@ -5,6 +5,11 @@ const webpack = require('webpack')
 const VueLoader = require('vue-loader')
 const VueLoaderConf = require('./vue-loader.conf')
 
+function makeAbsolute(relative){
+    return path.resolve(__dirname, relative)
+}
+
+
 // console.log(VueLoaderConf)
 var __app_name = 'vue1'
 
@@ -16,8 +21,8 @@ let config = {
     name: __app_name,
     mode: 'development',
     entry: {
-        main:[`./src/${__app_name}/index.js`,`./webpack-hot-middleware/client?path=/ws/${__app_name}/__webpack_hmr`]
-    // index:['./index.html','webpack-hot-middleware/client']
+        main:[path.resolve(__dirname,`../src/${__app_name}/index.js`),makeAbsolute(`../webpack-hot-middleware-dynamic-config/client?path=/ws/${__app_name}/__webpack_hmr`)]
+        // index:[path.resolve(__dirname,`../src/${__app_name}/index.js`)]
     },
     devtool: 'inline-source-map',
     devServer:{

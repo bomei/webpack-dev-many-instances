@@ -1,33 +1,7 @@
 'use strict'
 
-import mime from 'mime'
 import webpack from 'webpack'
-import createContext from './context'
-import reporter from './reporter'
-import { setFs, toDisk } from './fs'
-import {default as weblog} from 'webpack-log'
-import MemoryFileSystem from 'memory-fs'
-import DevMiddlewareError from './DevMiddlewareError'
-import pathabs from 'path-is-absolute'
-import {Middleware} from './middleware'
-import { noop } from './util'
 
-
-const defaults = {
-    logLevel: 'info',
-    logTime: false,
-    logger: null,
-    mimeTypes: null,
-    reporter,
-    stats: {
-        colors: true,
-        context: process.cwd()
-    },
-    watchOptions: {
-        aggregateTimeout: 200
-    },
-    writeToDisk: false
-}
 
 class Hook{
     constructor(middlewareNme, action, func){
@@ -37,7 +11,7 @@ class Hook{
     }
 }
 
-export class CompilerManager{
+export default class CompilerManager{
     constructor(){
         this.configShelf=new Map()
         this.compilerShelf = new Map()
@@ -52,9 +26,9 @@ export class CompilerManager{
         this.hooks[action].push(new Hook(middlewareNme, action,func))
     }
 
-    addConfig(config){
+    addConfig(config, unique){
         if(!config.name) return 'Config.name is required!'
-        if(this.compilerShelf.has(config.name)) return `${config.name} has existed!`
+        if(this.compilerShelf.has(config.name) && unique) return `${config.name} has existed!`
         let compiler = webpack(config)
         this.compilerShelf.set(config.name,{config,compiler})
         // this.hooks.add.forEach((hook)=>{
@@ -68,5 +42,9 @@ export class CompilerManager{
         //     hook.func(name)
         // })
         this.compilerShelf.delete(name)
+    }
+
+    get(name){
+        return this.compilerShelf.get(name)
     }
 }
